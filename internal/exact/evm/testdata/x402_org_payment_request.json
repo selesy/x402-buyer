@@ -1,0 +1,21 @@
+{
+    "x402Version": 1,
+    "error": "X-PAYMENT header is required",
+    "accepts": [
+        {
+            "scheme": "exact",
+            "network": "base-sepolia",
+            "maxAmountRequired": "10000",
+            "resource": "https://www.x402.org/protected",
+            "description": "Access to protected content",
+            "mimeType": "application/json",
+            "payTo": "0x209693Bc6afc0C5328bA36FaF03C514EF312287C",
+            "maxTimeoutSeconds": 300,
+            "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+            "extra": {
+                "name": "USDC",
+                "version": "2"
+            }
+        }
+    ]
+}
