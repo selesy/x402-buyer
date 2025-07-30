@@ -1,6 +1,7 @@
 package buyer
 
 import (
+	"bytes"
 	"crypto/ecdsa"
 	"crypto/rand"
 	"encoding/base64"
@@ -41,6 +42,18 @@ func NewX402BuyerTransport(next http.RoundTripper, priv *ecdsa.PrivateKey, wal a
 }
 
 func (t *X402BuyerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	// Body can only be read one time ... since we make two round-trips
+	// if a payment is required, we have to duplicate the body.  So we
+	// read the bytes and will create new readers for each call.
+	defer req.Body.Close()
+
+	body, err := io.ReadAll(req.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read request body: %w", err)
+	}
+
+	req.Body = io.NopCloser(bytes.NewReader(body))
+
 	resp, err := t.next.RoundTrip(req)
 	if err != nil {
 		return nil, err
@@ -49,6 +62,8 @@ func (t *X402BuyerTransport) RoundTrip(req *http.Request) (*http.Response, error
 	if resp.StatusCode != http.StatusPaymentRequired {
 		return resp, nil
 	}
+
+	req.Body = io.NopCloser(bytes.NewReader(body))
 
 	return t.handlePaymentRequired(req, resp)
 }
@@ -91,17 +106,11 @@ func (t *X402BuyerTransport) handlePaymentRequired(req *http.Request, resp *http
 
 	fmt.Println("Content length:", req.Header.Get("Content-Length"))
 
-	// Create a new request with the payment header.
-	newReq := req.Clone(req.Context())
-	newReq.Header.Set("X-Payment", base64.StdEncoding.EncodeToString(paymentData))
-	// newReq.Header.Set("Content-Length", strconv.Itoa(len(paymentData)))
-	// newReq.ContentLength = int64(len(paymentData))
-	// newReq.Body = io.NopCloser(bytes.NewReader(paymentData))
+	req.Header.Set("X-Payment", base64.StdEncoding.EncodeToString(paymentData))
 
-	fmt.Println("Content length:", newReq.Header.Get("Content-Length"))
-	fmt.Println("Body bytes:", len(paymentData))
+	fmt.Println("Request:", req)
 
-	return t.next.RoundTrip(newReq)
+	return t.next.RoundTrip(req)
 }
 
 func (t *X402BuyerTransport) createPayment(details types.PaymentRequirements) (*types.PaymentPayload, error) {
