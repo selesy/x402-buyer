@@ -1,29 +1,24 @@
 package evm_test
 
 import (
+	"bytes"
 	"encoding/hex"
 	"encoding/json"
 	"os"
-	"path/filepath"
 	"testing"
 	"time"
 
 	"github.com/decred/dcrd/dcrec/secp256k1"
 	"github.com/selesy/x402-buyer/internal/exact/evm"
 	"github.com/selesy/x402-buyer/pkg/payer"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"gotest.tools/v3/golden"
 )
-
-// const x402OrgPaymentRequest = `{"x402Version":1,"error":"X-PAYMENT header is required","accepts":[{"scheme":"exact","network":"base-sepolia","maxAmountRequired":"10000","resource":"https://www.x402.org/protected","description":"Access to protected content","mimeType":"application/json","payTo":"0x209693Bc6afc0C5328bA36FaF03C514EF312287C","maxTimeoutSeconds":300,"asset":"0x036CbD53842c5426634e7929541eC2318f3dCF7e","extra":{"name":"USDC","version":"2"}}]}`
 
 func TestNewClient(t *testing.T) {
 	t.Parallel()
 
-	paymentRequestJSON, err := os.ReadFile(filepath.Join("testdata", "x402_org_payment_request.json"))
-	require.NoError(t, err)
-
-	const exp = "0x6654c039206c904e5a7372069615184ff405c8cc1d50f6e055b69e068b6ad4c33f5572cb913c89a71af37c49c37a391d972032a198b109c41cbf4cbf1473e3fc1c"
+	paymentRequestJSON := golden.Get(t, "x402_org_payment_request.json")
 
 	privHex, ok := os.LookupEnv("X402_BUYER_PRIVATE_KEY")
 	require.True(t, ok)
@@ -46,11 +41,13 @@ func TestNewClient(t *testing.T) {
 	paymentPayload, err := payer.Pay(paymentRequest.Accepts[0])
 	require.NoError(t, err)
 
-	_ = paymentPayload
+	data, err := json.Marshal(paymentPayload)
+	require.NoError(t, err)
 
-	assert.Equal(t, exp, string(paymentPayload.Payload.Signature))
+	buf := &bytes.Buffer{}
+	require.NoError(t, json.Indent(buf, data, "", "  "))
 
-	t.Fail()
+	golden.Assert(t, buf.String(), "x402_org_payment_payload.golden")
 }
 
 func fixedNonceFunc(t *testing.T) payer.NonceFunc {

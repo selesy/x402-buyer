@@ -38,6 +38,8 @@ func ClientForKey(priv *ecdsa.PrivateKey) (*http.Client, error) {
 		URL:     accounts.URL{},
 	}
 
+	fmt.Println("Original address:", addr.Hex())
+
 	mgr := accounts.NewManager(&accounts.Config{InsecureUnlockAllowed: false}, ks)
 
 	wal, err := mgr.Find(acct)
@@ -53,10 +55,13 @@ func ClientForKey(priv *ecdsa.PrivateKey) (*http.Client, error) {
 		return nil, err
 	}
 
-	return ClientForWallet(wal, acct)
+	return ClientForWallet(priv, wal, acct)
+	// return &http.Client{
+	// 	Transport: NewX402BuyerTransport(http.DefaultTransport, ks, acct),
+	// }, nil
 }
 
-func ClientForWallet(wal accounts.Wallet, acct accounts.Account) (*http.Client, error) {
+func ClientForWallet(priv *ecdsa.PrivateKey, wal accounts.Wallet, acct accounts.Account) (*http.Client, error) {
 	if !wal.Contains(acct) {
 		return nil, errors.New("wallet does not contain target account")
 	}
@@ -84,6 +89,6 @@ func ClientForWallet(wal accounts.Wallet, acct accounts.Account) (*http.Client, 
 	// fmt.Println("Signature:", hex.EncodeToString(sig))
 
 	return &http.Client{
-		Transport: NewX402BuyerTransport(http.DefaultTransport, wal, acct),
+		Transport: NewX402BuyerTransport(http.DefaultTransport, priv, wal, acct),
 	}, nil
 }

@@ -1,0 +1,16 @@
+{
+  "x402Version": 1,
+  "scheme": "exact",
+  "network": "base-sepolia",
+  "payload": {
+    "signature": "0x6654c039206c904e5a7372069615184ff405c8cc1d50f6e055b69e068b6ad4c33f5572cb913c89a71af37c49c37a391d972032a198b109c41cbf4cbf1473e3fc1c",
+    "authorization": {
+      "from": "0x26279EC7Ad9207013149967b5aA1CF42AC6487eb",
+      "to": "0x209693Bc6afc0C5328bA36FaF03C514EF312287C",
+      "value": "10000",
+      "validAfter": "981172506",
+      "validBefore": "981173406",
+      "nonce": "0x140fd607c52d266941aa8d8241891654b6d7ab50a02028cb900c746e3a1bf4dd"
+    }
+  }
+}
