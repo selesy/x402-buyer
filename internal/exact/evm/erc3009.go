@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strconv"
 	"time"
@@ -25,13 +26,15 @@ type ExactEvm struct {
 	priv      *ecdsa.PrivateKey
 	nowFunc   payer.NowFunc
 	nonceFunc payer.NonceFunc
+	log       *slog.Logger
 }
 
-func NewExactEvm(priv *ecdsa.PrivateKey, nowFunc payer.NowFunc, nonceFunc payer.NonceFunc) (*ExactEvm, error) {
+func NewExactEvm(priv *ecdsa.PrivateKey, nowFunc payer.NowFunc, nonceFunc payer.NonceFunc, log *slog.Logger) (*ExactEvm, error) {
 	return &ExactEvm{
 		priv:      priv,
 		nowFunc:   nowFunc,
 		nonceFunc: nonceFunc,
+		log:       log,
 	}, nil
 }
 
@@ -107,48 +110,35 @@ func (e *ExactEvm) createPaymentExactEvm(requirements types.PaymentRequirements)
 		},
 	}
 
-	jsonData, err := json.Marshal(typedData)
-	if err != nil {
-		return nil, err
-	}
-
-	fmt.Println("JSON:", string(jsonData))
-	fmt.Println("JSON hex:", hexutil.Encode(jsonData))
-
 	hash, data, err := apitypes.TypedDataAndHash(typedData)
 	if err != nil {
 		return nil, err
 	}
 
-	fmt.Println("Hash:", hexutil.Encode(hash))
-	fmt.Println("Message:", data)
-	fmt.Println("Message hex:", hexutil.Encode([]byte(data)))
+	e.log.Debug("ERC-3009 hash", slog.String("hex", hexutil.Encode(hash)))
+	e.log.Debug("ERC-3009 message", slog.String("hex", hexutil.Encode([]byte(data))))
 
-	sig3, err := crypto.Sign(hash, e.priv)
+	sig, err := crypto.Sign(hash, e.priv)
 	if err != nil {
 		return nil, err
 	}
 
-	sig3[64] += 27
+	sig[64] += 27
 
-	fmt.Println("Signature3:", hex.EncodeToString(sig3))
+	e.log.Debug("Signature", slog.String("hex", hex.EncodeToString(sig)))
 
-	payload.Payload.Signature = hexutil.Encode(sig3)
+	payload.Payload.Signature = hexutil.Encode(sig)
 
-	sig3[64] -= 27
+	sig[64] -= 27
 
-	pubKey, err := crypto.SigToPub(hash, sig3)
+	pubKey, err := crypto.SigToPub(hash, sig)
 	if err != nil {
 		return nil, err
 	}
 
 	addr := crypto.PubkeyToAddress(*pubKey)
 
-	fmt.Println("Recovered Address:", addr.Hex())
-
-	fmt.Println("Payload:", payload)
-	fmt.Println("Exact EVM:", payload.Payload)
-	fmt.Println("Exact EVM Authorization:", payload.Payload.Authorization)
+	e.log.Debug("Recovered address", slog.String("hex", addr.Hex()))
 
 	return payload, nil
 }

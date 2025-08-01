@@ -13,7 +13,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
-func ClientForKey(priv *ecdsa.PrivateKey) (*http.Client, error) {
+func ClientForKey(priv *ecdsa.PrivateKey, opts ...Option) (*http.Client, error) {
 	path := filepath.Join(os.TempDir(), "x402", "buyer", "keystore")
 
 	if err := os.MkdirAll(path, 0o700); err != nil {
@@ -28,7 +28,7 @@ func ClientForKey(priv *ecdsa.PrivateKey) (*http.Client, error) {
 	}
 
 	if err != nil {
-		fmt.Println("Warning:", err.Error())
+		return nil, err
 	}
 
 	pub, _ := priv.Public().(*ecdsa.PublicKey)
@@ -55,13 +55,13 @@ func ClientForKey(priv *ecdsa.PrivateKey) (*http.Client, error) {
 		return nil, err
 	}
 
-	return ClientForWallet(priv, wal, acct)
+	return ClientForWallet(priv, wal, acct, opts...)
 	// return &http.Client{
 	// 	Transport: NewX402BuyerTransport(http.DefaultTransport, ks, acct),
 	// }, nil
 }
 
-func ClientForWallet(priv *ecdsa.PrivateKey, wal accounts.Wallet, acct accounts.Account) (*http.Client, error) {
+func ClientForWallet(priv *ecdsa.PrivateKey, wal accounts.Wallet, acct accounts.Account, opts ...Option) (*http.Client, error) {
 	if !wal.Contains(acct) {
 		return nil, errors.New("wallet does not contain target account")
 	}
@@ -88,7 +88,12 @@ func ClientForWallet(priv *ecdsa.PrivateKey, wal accounts.Wallet, acct accounts.
 
 	// fmt.Println("Signature:", hex.EncodeToString(sig))
 
+	trans, err := NewX402BuyerTransport(http.DefaultTransport, priv, wal, acct, opts...)
+	if err != nil {
+		return nil, err
+	}
+
 	return &http.Client{
-		Transport: NewX402BuyerTransport(http.DefaultTransport, priv, wal, acct),
+		Transport: trans,
 	}, nil
 }

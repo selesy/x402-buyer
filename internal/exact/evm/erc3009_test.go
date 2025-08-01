@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/hex"
 	"encoding/json"
+	"io"
+	"log/slog"
 	"os"
 	"testing"
 	"time"
@@ -35,7 +37,9 @@ func TestNewClient(t *testing.T) {
 	require.NotNil(t, paymentRequest.Accepts)
 	require.Len(t, paymentRequest.Accepts, 1)
 
-	payer, err := evm.NewExactEvm(priv.ToECDSA(), fixedNowFunc(t), fixedNonceFunc(t))
+	log := slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{}))
+
+	payer, err := evm.NewExactEvm(priv.ToECDSA(), fixedNowFunc(t), fixedNonceFunc(t), log)
 	require.NoError(t, err)
 
 	paymentPayload, err := payer.Pay(paymentRequest.Accepts[0])
