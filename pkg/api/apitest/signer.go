@@ -4,7 +4,6 @@ import (
 	"crypto/ecdsa"
 	"encoding/hex"
 	"math/big"
-	"os"
 	"testing"
 
 	"github.com/ethereum/go-ethereum/accounts"
@@ -20,14 +19,15 @@ import (
 )
 
 const (
-	ECDSAPrivateKeyHex      = "6cfb3f917efa513636a6f8103d01426e932806cc7205c4361de4c633452e2b57"
-	NotOnCurvePrivateKeyHex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+	ECDSAPrivateKeyHexEnvVarName = "X402_BUYER_PRIVATE_KEY"
+	ECDSAPrivateKeyHex           = "6cfb3f917efa513636a6f8103d01426e932806cc7205c4361de4c633452e2b57"
+	NotOnCurvePrivateKeyHex      = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 
 	Passphrase = "LetMeIn"
 )
 
 func TestSigner(t *testing.T, signer api.Signer) {
-	const expSig = "1bb6d051bf1a3d8e239b1dc6d92bba5db06ffe2f807e6cdf6555bf4ae801fca6146403a7f9c84bbab9f04fdaf4e46de5784632299cae77d41c71b1038b9e3f5a1b"
+	const expSig = "4134c5a9c223b337acaa8085bb4553787fa159a809793f6920044766d55271b77eb01e102b9525edffcac69c31a4c1d51c7fee78bab28bd716f3bb5181ed31001b"
 
 	hash, _ := TransferWithAuthorizationHash(t)
 
@@ -39,7 +39,7 @@ func TestSigner(t *testing.T, signer api.Signer) {
 }
 
 func TestDataSigner(t *testing.T, signer api.Signer) {
-	const expSig = "1bb6d051bf1a3d8e239b1dc6d92bba5db06ffe2f807e6cdf6555bf4ae801fca6146403a7f9c84bbab9f04fdaf4e46de5784632299cae77d41c71b1038b9e3f5a1b"
+	const expSig = "4134c5a9c223b337acaa8085bb4553787fa159a809793f6920044766d55271b77eb01e102b9525edffcac69c31a4c1d51c7fee78bab28bd716f3bb5181ed31001b"
 
 	_, data := TransferWithAuthorizationHash(t)
 
@@ -53,9 +53,7 @@ func TestDataSigner(t *testing.T, signer api.Signer) {
 func PrivateKey(t *testing.T) *ecdsa.PrivateKey {
 	t.Helper()
 
-	privHex, ok := os.LookupEnv("X402_BUYER_PRIVATE_KEY")
-	require.True(t, ok)
-	privBytes, err := hex.DecodeString(privHex)
+	privBytes, err := hex.DecodeString(ECDSAPrivateKeyHex)
 	require.NoError(t, err)
 
 	priv := new(ecdsa.PrivateKey)
@@ -94,52 +92,6 @@ func Wallet(t *testing.T) (accounts.Wallet, accounts.Account) {
 
 	return wal, acct
 }
-
-// func ECDSAPrivateKey(t *testing.T) *ecdsa.PrivateKey {
-// 	t.Helper()
-
-// 	return ECDSAPrivateKeyFromHex(t, ECDSAPrivateKeyHex)
-// }
-
-// func ECDSAPrivateKeyFromHex(t *testing.T, Hex string) *ecdsa.PrivateKey {
-// 	t.Helper()
-
-// 	privBytes, err := hex.DecodeString(Hex)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	//     hexString := "your_hex_string_here"
-// 	// privateKeyBytes, err := hex.DecodeString(hexString)
-// 	// if err != nil {
-// 	//     log.Fatal(err)
-// 	// }
-// 	// privateKey, err := ecdsa.UnmarshalECPrivateKey(privateKeyBytes)
-// 	// if err != nil {
-// 	//     log.Fatal(err)
-// 	// }
-
-// 	privateKey := new(ecdsa.PrivateKey)
-// 	privateKey.PublicKey.Curve = crypto.S256()      // Choose the appropriate curve
-// 	privateKey.D = new(big.Int).SetBytes(privBytes) // Set the private key value
-// 	_ = privateKey
-
-// 	// Generate the public key from the private key
-// 	// privateKey.PublicKey.X, privateKey.PublicKey.Y = privateKey.Curve.ScalarBaseMult(privateKey.D.Bytes())
-// 	// ecdh.PrivateKeyFromBytes(privBytes)
-
-// 	priv := secp256k1.PrivKeyFromBytes(privBytes).ToECDSA()
-// 	_ = priv
-
-// 	assert.Equal(t, priv, privateKey)
-// 	// t.Fail()
-
-// 	// pr, err := crypto.HexToECDSA(ECDSAPrivateKeyHex)
-// 	pr, err := crypto.ToECDSA(privBytes)
-// 	assert.Equal(t, pr, privateKey)
-
-// 	return privateKey
-// }
 
 func TransferWithAuthorizationHash(t *testing.T) ([]byte, string) {
 	t.Helper()

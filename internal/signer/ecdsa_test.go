@@ -4,7 +4,6 @@ import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
-	"os"
 	"testing"
 
 	"github.com/ethereum/go-ethereum/crypto/secp256k1"
@@ -46,10 +45,10 @@ func TestECDSASignerFromHex(t *testing.T) {
 	t.Run("passes- valid hex for secp256k1 private key", func(t *testing.T) {
 		t.Parallel()
 
-		privHex, ok := os.LookupEnv("X402_BUYER_PRIVATE_KEY")
-		require.True(t, ok)
+		// privHex, ok := os.LookupEnv(apitest.ECDSAPrivateKeyHexEnvVarName)
+		// require.True(t, ok)
 
-		signer, err := signer.NewECDSASignerFromHex(privHex)
+		signer, err := signer.NewECDSASignerFromHex(apitest.ECDSAPrivateKeyHex)
 		require.NoError(t, err)
 
 		apitest.TestSigner(t, signer)

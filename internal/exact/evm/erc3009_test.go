@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"io"
 	"log/slog"
-	"os"
 	"testing"
 	"time"
 
@@ -15,6 +14,7 @@ import (
 
 	"github.com/selesy/x402-buyer/internal/exact/evm"
 	"github.com/selesy/x402-buyer/internal/signer"
+	"github.com/selesy/x402-buyer/pkg/api/apitest"
 	"github.com/selesy/x402-buyer/pkg/payer"
 )
 
@@ -23,10 +23,7 @@ func TestNewClient(t *testing.T) {
 
 	paymentRequestJSON := golden.Get(t, "x402_org_payment_request.json")
 
-	privHex, ok := os.LookupEnv("X402_BUYER_PRIVATE_KEY")
-	require.True(t, ok)
-
-	signer, err := signer.NewECDSASignerFromHex(privHex)
+	signer, err := signer.NewECDSASignerFromHex(apitest.ECDSAPrivateKeyHex)
 	require.NoError(t, err)
 
 	var paymentRequest payer.PaymentRequest

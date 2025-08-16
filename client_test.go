@@ -12,11 +12,7 @@ import (
 
 	buyer "github.com/selesy/x402-buyer"
 	"github.com/selesy/x402-buyer/internal/signer"
-)
-
-const (
-	testEnvVarName = "X402_BUYER_PRIVATE_KEY"
-	testPrivKey    = "7dad518a602e2b504e228012553cc2648109202ebb09f347646e9013b88f22d5"
+	"github.com/selesy/x402-buyer/pkg/api/apitest"
 )
 
 func TestClientForPrivateKey(t *testing.T) {
@@ -35,7 +31,7 @@ func TestClientForPrivateKey(t *testing.T) {
 func TestClientFromPrivateKeyHex(t *testing.T) {
 	t.Parallel()
 
-	cl, err := buyer.ClientForPrivateKeyHex(testPrivKey)
+	cl, err := buyer.ClientForPrivateKeyHex(apitest.ECDSAPrivateKeyHex)
 	require.NoError(t, err)
 	assert.NotNil(t, cl)
 
@@ -45,9 +41,9 @@ func TestClientFromPrivateKeyHex(t *testing.T) {
 func TestClientFromPrivateKeyHexFromEnv(t *testing.T) {
 	t.Parallel()
 
-	require.NoError(t, os.Setenv("X402_BUYER_PRIVATE_KEY", testPrivKey))
+	require.NoError(t, os.Setenv(apitest.ECDSAPrivateKeyHexEnvVarName, apitest.ECDSAPrivateKeyHex))
 
-	cl, err := buyer.ClientForPrivateKeyHexFromEnv(testEnvVarName)
+	cl, err := buyer.ClientForPrivateKeyHexFromEnv(apitest.ECDSAPrivateKeyHexEnvVarName)
 	require.NoError(t, err)
 	assert.NotNil(t, cl)
 
@@ -57,7 +53,8 @@ func TestClientFromPrivateKeyHexFromEnv(t *testing.T) {
 func TestClientForSigner(t *testing.T) {
 	t.Parallel()
 
-	privHex, ok := os.LookupEnv("X402_BUYER_PRIVATE_KEY")
+	require.NoError(t, os.Setenv(apitest.ECDSAPrivateKeyHexEnvVarName, apitest.ECDSAPrivateKeyHex))
+	privHex, ok := os.LookupEnv(apitest.ECDSAPrivateKeyHexEnvVarName)
 	require.True(t, ok)
 
 	signer, err := signer.NewECDSASignerFromHex(privHex)
