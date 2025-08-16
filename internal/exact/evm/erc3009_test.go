@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/decred/dcrd/dcrec/secp256k1"
 	"github.com/selesy/x402-buyer/internal/exact/evm"
+	"github.com/selesy/x402-buyer/internal/signer"
 	"github.com/selesy/x402-buyer/pkg/payer"
 	"github.com/stretchr/testify/require"
 	"gotest.tools/v3/golden"
@@ -25,10 +25,8 @@ func TestNewClient(t *testing.T) {
 	privHex, ok := os.LookupEnv("X402_BUYER_PRIVATE_KEY")
 	require.True(t, ok)
 
-	privBytes, err := hex.DecodeString(privHex)
+	signer, err := signer.NewECDSASignerFromHex(privHex)
 	require.NoError(t, err)
-
-	priv, _ := secp256k1.PrivKeyFromBytes(privBytes)
 
 	var paymentRequest payer.PaymentRequest
 
@@ -39,7 +37,7 @@ func TestNewClient(t *testing.T) {
 
 	log := slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{}))
 
-	payer, err := evm.NewExactEvm(priv.ToECDSA(), fixedNowFunc(t), fixedNonceFunc(t), log)
+	payer, err := evm.NewExactEvm(signer, fixedNowFunc(t), fixedNonceFunc(t), log)
 	require.NoError(t, err)
 
 	paymentPayload, err := payer.Pay(paymentRequest.Accepts[0])

@@ -1,9 +1,9 @@
 package evm
 
 import (
-	"crypto/ecdsa"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -15,6 +15,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/signer/core/apitypes"
+	"github.com/selesy/x402-buyer/pkg/api"
 	"github.com/selesy/x402-buyer/pkg/payer"
 )
 
@@ -23,15 +24,20 @@ var _ payer.Payer = (*ExactEvm)(nil)
 // ExactEvm is a payer.Payer that handles payment requests on EVM-compatible
 // networks for the "exact" scheme.
 type ExactEvm struct {
-	priv      *ecdsa.PrivateKey
+	signer    api.EVMSigner
 	nowFunc   payer.NowFunc
 	nonceFunc payer.NonceFunc
 	log       *slog.Logger
 }
 
-func NewExactEvm(priv *ecdsa.PrivateKey, nowFunc payer.NowFunc, nonceFunc payer.NonceFunc, log *slog.Logger) (*ExactEvm, error) {
+func NewExactEvm(signer api.Signer, nowFunc payer.NowFunc, nonceFunc payer.NonceFunc, log *slog.Logger) (*ExactEvm, error) {
+	s, ok := signer.(api.EVMSigner)
+	if !ok {
+		return nil, errors.New("Exact EVM requires an EVM signer")
+	}
+
 	return &ExactEvm{
-		priv:      priv,
+		signer:    s,
 		nowFunc:   nowFunc,
 		nonceFunc: nonceFunc,
 		log:       log,
@@ -118,7 +124,7 @@ func (e *ExactEvm) createPaymentExactEvm(requirements types.PaymentRequirements)
 	e.log.Debug("ERC-3009 hash", slog.String("hex", hexutil.Encode(hash)))
 	e.log.Debug("ERC-3009 message", slog.String("hex", hexutil.Encode([]byte(data))))
 
-	sig, err := crypto.Sign(hash, e.priv)
+	sig, err := e.signer.Sign(hash)
 	if err != nil {
 		return nil, err
 	}
@@ -140,6 +146,16 @@ func (e *ExactEvm) createPaymentExactEvm(requirements types.PaymentRequirements)
 
 	e.log.Debug("Recovered address", slog.String("hex", addr.Hex()))
 
+	e.log.Info(
+		"x402 payment authorized",
+		slog.String("from", payload.Payload.Authorization.From),
+		slog.String("to", payload.Payload.Authorization.To),
+		slog.String("value", payload.Payload.Authorization.Value),
+		slog.String("scheme", requirements.Scheme),
+		slog.String("network", requirements.Network),
+		slog.String("name", extra["name"].(string)),
+	)
+
 	return payload, nil
 }
 
@@ -156,7 +172,7 @@ func (e *ExactEvm) preparePaymentHeader(details types.PaymentRequirements) (*typ
 		Payload: &types.ExactEvmPayload{
 			Signature: "",
 			Authorization: &types.ExactEvmPayloadAuthorization{
-				From:        crypto.PubkeyToAddress(e.priv.PublicKey).Hex(),
+				From:        e.signer.Address().Hex(),
 				To:          details.PayTo,
 				Value:       details.MaxAmountRequired,
 				ValidAfter:  validAfter,
