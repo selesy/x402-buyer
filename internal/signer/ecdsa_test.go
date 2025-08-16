@@ -45,9 +45,6 @@ func TestECDSASignerFromHex(t *testing.T) {
 	t.Run("passes- valid hex for secp256k1 private key", func(t *testing.T) {
 		t.Parallel()
 
-		// privHex, ok := os.LookupEnv(apitest.ECDSAPrivateKeyHexEnvVarName)
-		// require.True(t, ok)
-
 		signer, err := signer.NewECDSASignerFromHex(apitest.ECDSAPrivateKeyHex)
 		require.NoError(t, err)
 
