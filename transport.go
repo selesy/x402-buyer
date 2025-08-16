@@ -2,10 +2,8 @@ package buyer
 
 import (
 	"bytes"
-	"crypto/ecdsa"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -13,50 +11,45 @@ import (
 	"time"
 
 	"github.com/coinbase/x402/go/pkg/types"
-	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/selesy/x402-buyer/internal/exact/evm"
+	"github.com/selesy/x402-buyer/pkg/api"
 	"github.com/selesy/x402-buyer/pkg/payer"
 )
 
-var _ http.RoundTripper = (*X402BuyerTransport)(nil)
+var _ http.RoundTripper = (*Transport)(nil)
 
-type X402BuyerTransport struct {
+// Transport is an http.RoundTripper that is capable of making x402 payments
+// to access HTTP-based content or services on the Internet.
+type Transport struct {
 	config
 
-	next http.RoundTripper
-	priv *ecdsa.PrivateKey
-	wal  accounts.Wallet
-	acct accounts.Account
+	next   http.RoundTripper
+	signer api.Signer
 }
 
-func NewX402BuyerTransport(next http.RoundTripper, priv *ecdsa.PrivateKey, wal accounts.Wallet, acct accounts.Account, opts ...Option) (*X402BuyerTransport, error) {
-	var errs error
-
-	cfg := config{
-		log: slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{})),
+// NewTransport creates an http.RoundTripper that is capable of making x402
+// payments using the provided api.Signer by wrapping the underlying
+// http.Transport provided by the next argument.
+func NewTransport(next http.RoundTripper, signer api.Signer, opts ...Option) (*Transport, error) {
+	cfg, err := newConfig(opts...)
+	if err != nil {
+		return nil, err
 	}
 
-	for _, opt := range opts {
-		if err := opt(&cfg); err != nil {
-			errs = errors.Join(errs, err)
-		}
-	}
-
-	if errs != nil {
-		return nil, errs
-	}
-
-	return &X402BuyerTransport{
-		config: cfg,
-
-		next: next,
-		priv: priv,
-		wal:  wal,
-		acct: acct,
-	}, nil
+	return newTransport(next, signer, cfg), nil
 }
 
-func (t *X402BuyerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+func newTransport(next http.RoundTripper, signer api.Signer, cfg *config) *Transport {
+	return &Transport{
+		config: *cfg,
+
+		next:   next,
+		signer: signer,
+	}
+}
+
+// RoundTrip implements http.RoundTripper.
+func (t *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 	// Body can only be read one time ... since we make two round-trips
 	// if a payment is required, we have to duplicate the body.  So we
 	// read the bytes and will create new readers for each call.
@@ -76,6 +69,7 @@ func (t *X402BuyerTransport) RoundTrip(req *http.Request) (*http.Response, error
 
 	}
 
+	// Perform the http.Request
 	if req.Body != nil {
 		req.Body = io.NopCloser(bytes.NewReader(body))
 	}
@@ -85,10 +79,12 @@ func (t *X402BuyerTransport) RoundTrip(req *http.Request) (*http.Response, error
 		return nil, err
 	}
 
+	// Return the http.Response if no payment is required
 	if resp.StatusCode != http.StatusPaymentRequired {
 		return resp, nil
 	}
 
+	// Intercept the response with a copy of the request
 	if req.Body != nil {
 		req.Body = io.NopCloser(bytes.NewReader(body))
 	}
@@ -96,7 +92,7 @@ func (t *X402BuyerTransport) RoundTrip(req *http.Request) (*http.Response, error
 	return t.handlePaymentRequired(req, resp)
 }
 
-func (t *X402BuyerTransport) handlePaymentRequired(req *http.Request, resp *http.Response) (*http.Response, error) {
+func (t *Transport) handlePaymentRequired(req *http.Request, resp *http.Response) (*http.Response, error) {
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
@@ -135,19 +131,13 @@ func (t *X402BuyerTransport) handlePaymentRequired(req *http.Request, resp *http
 	return t.next.RoundTrip(req)
 }
 
-func (t *X402BuyerTransport) createPayment(details types.PaymentRequirements) (*types.PaymentPayload, error) {
-	payer, err := evm.NewExactEvm(t.priv, time.Now, payer.DefaultNonce, t.log)
+func (t *Transport) createPayment(details types.PaymentRequirements) (*types.PaymentPayload, error) {
+	payer, err := evm.NewExactEvm(t.signer, time.Now, payer.DefaultNonce, t.log)
 	if err != nil {
 		return nil, err
 	}
 
 	return payer.Pay(details)
-	// switch details.Scheme {
-	// case "exact":
-	// 	return t.createPaymentExactEvm(details)
-	// default:
-	// 	return nil, fmt.Errorf("unknown payment scheme : %s: %w", http.ErrNotSupported, details.Scheme)
-	// }
 }
 
 // func (t *X402BuyerTransport) createPaymentExactEvm(details types.PaymentRequirements) (*types.PaymentPayload, error) {
