@@ -9,7 +9,7 @@ type Signer interface {
 }
 
 // An EVMSigner is a Signer that operates on behalf of an Ethereum account
-// and therefor has an address.
+// and therefore has an address.
 type EVMSigner interface {
 	Signer
 

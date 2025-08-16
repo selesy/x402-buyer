@@ -50,7 +50,7 @@ func TestNewClient(t *testing.T) {
 	buf := &bytes.Buffer{}
 	require.NoError(t, json.Indent(buf, data, "", "  "))
 
-	golden.Assert(t, buf.String(), "x402_org_payment_payload.golden")
+	golden.Assert(t, buf.String()+"\n", "x402_org_payment_payload.golden")
 }
 
 func fixedNonceFunc(t *testing.T) payer.NonceFunc {
