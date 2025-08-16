@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"github.com/coinbase/x402/go/pkg/types"
+	"github.com/lmittmann/tint"
+
 	"github.com/selesy/x402-buyer/internal/exact/evm"
 	"github.com/selesy/x402-buyer/pkg/api"
 	"github.com/selesy/x402-buyer/pkg/payer"
@@ -60,7 +62,11 @@ func (t *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 	)
 
 	if req.Body != nil {
-		defer req.Body.Close()
+		defer func() {
+			if err := req.Body.Close(); err != nil {
+				t.log.Error("failed to close request body", tint.Err(err))
+			}
+		}()
 
 		body, err = io.ReadAll(req.Body)
 		if err != nil {
@@ -93,7 +99,11 @@ func (t *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 }
 
 func (t *Transport) handlePaymentRequired(req *http.Request, resp *http.Response) (*http.Response, error) {
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			t.log.Error("failed to close response body", tint.Err(err))
+		}
+	}()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

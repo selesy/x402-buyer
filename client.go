@@ -33,7 +33,7 @@ func ClientForPrivateKeyHex(privHex string, opts ...Option) (*http.Client, error
 }
 
 // ClientForPrivateKeyHexFromEnv is like ClientForPrivateKeyHex except that
-// hexidecimal string is read from the environment variable selected by name.
+// hexadecimal string is read from the environment variable selected by name.
 func ClientForPrivateKeyHexFromEnv(name string, opts ...Option) (*http.Client, error) {
 	signer, err := signer.NewECDSASignerFromEnv(name)
 	if err != nil {

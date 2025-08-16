@@ -13,9 +13,10 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/secp256k1"
 	"github.com/ethereum/go-ethereum/signer/core/apitypes"
-	"github.com/selesy/x402-buyer/pkg/api"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/selesy/x402-buyer/pkg/api"
 )
 
 const (
@@ -59,8 +60,8 @@ func PrivateKey(t *testing.T) *ecdsa.PrivateKey {
 
 	priv := new(ecdsa.PrivateKey)
 	priv.D = new(big.Int).SetBytes(privBytes)
-	priv.PublicKey.Curve = secp256k1.S256()
-	priv.PublicKey.X, priv.PublicKey.Y = secp256k1.S256().ScalarBaseMult(priv.D.Bytes())
+	priv.Curve = secp256k1.S256()
+	priv.X, priv.Y = secp256k1.S256().ScalarBaseMult(priv.D.Bytes())
 	require.False(t, priv.X == nil || priv.Y == nil)
 
 	return priv

@@ -10,11 +10,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/require"
+	"gotest.tools/v3/golden"
+
 	"github.com/selesy/x402-buyer/internal/exact/evm"
 	"github.com/selesy/x402-buyer/internal/signer"
 	"github.com/selesy/x402-buyer/pkg/payer"
-	"github.com/stretchr/testify/require"
-	"gotest.tools/v3/golden"
 )
 
 func TestNewClient(t *testing.T) {

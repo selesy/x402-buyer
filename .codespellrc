@@ -1,0 +1,3 @@
+[codespell]
+skip = go.*,**/testdata/**,**/go.*
+ignore-words-list = buidlr,wit

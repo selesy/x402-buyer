@@ -1,0 +1,47 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v5.0.0
+  hooks:
+    - id: trailing-whitespace
+    - id: end-of-file-fixer
+    - id: mixed-line-ending
+    - id: check-json
+      # exclude: internal/agi/testdata/errors_on_unmarshal_with_invalid_json/.config.json
+    - id: check-yaml
+    - id: check-added-large-files
+    # - id: detect-aws-credentials
+    - id: detect-private-key
+    - id: mixed-line-ending
+- repo: https://github.com/codespell-project/codespell
+  rev: v2.4.1
+  hooks:
+    - id: codespell
+- repo: https://github.com/TekWizely/pre-commit-golang
+  rev: v1.0.0-rc.1
+  hooks:
+    - id: go-mod-tidy
+      args: ["--hook:env:GOPRIVATE=github.com/DIN-center"]
+    - id: my-cmd-repo
+      alias: go-generate
+      name: go-generate
+      args: ["go", "generate", "./..."]
+    - id: go-test-mod
+    - id: golangci-lint-mod
+    - id: my-cmd-repo
+      alias: govulncheck
+      name: govulncheck
+      args: ["bash", "-c", "go tool golang.org/x/vuln/cmd/govulncheck ./..."]
+- repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
+  rev: v9.22.0
+  hooks:
+    - id: commitlint
+      stages: [commit-msg]
+      additional_dependencies: ['@commitlint/config-conventional']
+- repo: https://github.com/trufflesecurity/trufflehog
+  rev: v3.88.21
+  hooks:
+    - id: trufflehog
+      alias: trufflehog
+      name: trufflehog

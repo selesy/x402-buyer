@@ -15,6 +15,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/signer/core/apitypes"
+
 	"github.com/selesy/x402-buyer/pkg/api"
 	"github.com/selesy/x402-buyer/pkg/payer"
 )
@@ -33,7 +34,7 @@ type ExactEvm struct {
 func NewExactEvm(signer api.Signer, nowFunc payer.NowFunc, nonceFunc payer.NonceFunc, log *slog.Logger) (*ExactEvm, error) {
 	s, ok := signer.(api.EVMSigner)
 	if !ok {
-		return nil, errors.New("Exact EVM requires an EVM signer")
+		return nil, errors.New("the Exact EVM scheme requires an EVM signer")
 	}
 
 	return &ExactEvm{

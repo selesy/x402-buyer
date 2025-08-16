@@ -6,11 +6,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	buyer "github.com/selesy/x402-buyer"
 	"github.com/selesy/x402-buyer/internal/signer"
 	"github.com/selesy/x402-buyer/pkg/api/apitest"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestTransport(t *testing.T) {
@@ -61,6 +62,7 @@ func TestTransport(t *testing.T) {
 		require.NoError(t, err)
 
 		req, err := http.NewRequest(http.MethodGet, "https://example.com", strings.NewReader("Request body"))
+		require.NoError(t, err)
 
 		respOut, err := trans.RoundTrip(req)
 		require.NoError(t, err)

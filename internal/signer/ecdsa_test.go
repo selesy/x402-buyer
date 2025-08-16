@@ -8,10 +8,11 @@ import (
 	"testing"
 
 	"github.com/ethereum/go-ethereum/crypto/secp256k1"
-	"github.com/selesy/x402-buyer/internal/signer"
-	"github.com/selesy/x402-buyer/pkg/api/apitest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/selesy/x402-buyer/internal/signer"
+	"github.com/selesy/x402-buyer/pkg/api/apitest"
 )
 
 func TestECDSASigner(t *testing.T) {

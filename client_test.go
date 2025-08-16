@@ -7,10 +7,11 @@ import (
 	"testing"
 
 	"github.com/ethereum/go-ethereum/crypto/secp256k1"
-	buyer "github.com/selesy/x402-buyer"
-	"github.com/selesy/x402-buyer/internal/signer"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	buyer "github.com/selesy/x402-buyer"
+	"github.com/selesy/x402-buyer/internal/signer"
 )
 
 const (

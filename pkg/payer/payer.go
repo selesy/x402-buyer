@@ -41,7 +41,7 @@ type NowFunc func() time.Time
 
 func DefaultNonce() []byte {
 	nonce := make([]byte, 32)
-	rand.Read(nonce)
+	_, _ = rand.Read(nonce)
 
 	return nonce
 }

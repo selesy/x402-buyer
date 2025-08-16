@@ -10,6 +10,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/secp256k1"
+
 	"github.com/selesy/x402-buyer/pkg/api"
 )
 
@@ -38,8 +39,8 @@ func NewECDSASigner(priv *ecdsa.PrivateKey) (*ECDSASigner, error) {
 func NewECDSASignerFromBytes(b []byte) (*ECDSASigner, error) {
 	priv := new(ecdsa.PrivateKey)
 	priv.D = new(big.Int).SetBytes(b)
-	priv.PublicKey.Curve = secp256k1.S256()
-	priv.PublicKey.X, priv.PublicKey.Y = secp256k1.S256().ScalarBaseMult(priv.D.Bytes())
+	priv.Curve = secp256k1.S256()
+	priv.X, priv.Y = secp256k1.S256().ScalarBaseMult(priv.D.Bytes())
 
 	if priv.X == nil || priv.Y == nil {
 		return nil, ErrInvalidPoint
