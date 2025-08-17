@@ -1,0 +1,53 @@
+= x402-buyer
+
+image:https://pkg.go.dev/badge/github.com/selesy/x402-buyer.svg[link=https://pkg.go.dev/github.com/selesy/x402-buyer]
+image:https://img.shields.io/github/actions/workflow/status/selesy/x402-buyer/pre-commit.yaml[GitHub Actions Workflow Status]
+image:https://goreportcard.com/badge/github.com/selesy/x402-buyer[link=https://goreportcard.com/report/github.com/selesy/x402-buyer]
+image:https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square[link=https://github.com/RichardLitt/standard-readme]
+image:https://img.shields.io/github/license/selesy/x402-buyer[GitHub License]
+image:https://img.shields.io/github/v/release/selesy/x402-buyer[GitHub Release]
+
+Package `buyer` produces [http.Client](https://pkg.go.dev/net/http#Client)'s that can make [x402](https://x402.org) payments for HTTP content and services.
+
+== Install
+
+Include this library in your project using the following command:
+
+[source,bash]
+----
+go get github.com/selesy/x402-buyer
+----
+
+== Usage
+
+Create an `http.Client` as shown below, then use it to make HTTP requests as usual.  If an `x402` payment is required, it will be made by the client and the response will be returned as usual.
+
+[source,go]
+----
+include::example/private-key/main.go[]
+----
+
+Full documentation for this library is available as https://pkg.go.dev/github.com/selesy/x402-buyer[Go docs].
+
+== Contributing
+
+* Please report issues using https://github.com/selesy/x402-buyer/issues[GitHub Issues].
+* PRs are happily considered when submitted to https://github.com/selesy/x402-buyer/pulls[GitHub Pull requests].
+* Other questions or discussions can be submitted to https://github.com/selesy/x402-buyer/discussions[GitHub Discussions].
+
+=== Development
+
+This project strives to maintain minimal external dependencies.  If you have a feature that requires specific libraries, let's discuss whether a new Go module should be created in a sub-directory.
+
+The tools required to develop this project and to run the `pre-commit` checks are defined in the `.tool-versions` file.
+
+[source]
+----
+include::.tool-versions[]
+----
+
+If you're using `asdf`, simply run `asdf install`.  Otherwise, install the listed tools in the manner required by your operating system.  Once the required tools are installed, install the `pre-commit` hooks by running `pre-commit install --install-hooks`.  Test your environment by running `pre-commit run --all-files`.
+
+== License
+
+This project is distributed under the https://github.com/selesy/x402-buyer/blob/main/LICENSE[MIT License].
