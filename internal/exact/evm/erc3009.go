@@ -17,21 +17,20 @@ import (
 	"github.com/ethereum/go-ethereum/signer/core/apitypes"
 
 	"github.com/selesy/x402-buyer/pkg/api"
-	"github.com/selesy/x402-buyer/pkg/payer"
 )
 
-var _ payer.Payer = (*ExactEvm)(nil)
+var _ api.Payer = (*ExactEvm)(nil)
 
 // ExactEvm is a payer.Payer that handles payment requests on EVM-compatible
 // networks for the "exact" scheme.
 type ExactEvm struct {
 	signer    api.EVMSigner
-	nowFunc   payer.NowFunc
-	nonceFunc payer.NonceFunc
+	nowFunc   api.NowFunc
+	nonceFunc api.NonceFunc
 	log       *slog.Logger
 }
 
-func NewExactEvm(signer api.Signer, nowFunc payer.NowFunc, nonceFunc payer.NonceFunc, log *slog.Logger) (*ExactEvm, error) {
+func NewExactEvm(signer api.Signer, nowFunc api.NowFunc, nonceFunc api.NonceFunc, log *slog.Logger) (*ExactEvm, error) {
 	s, ok := signer.(api.EVMSigner)
 	if !ok {
 		return nil, errors.New("the Exact EVM scheme requires an EVM signer")
@@ -56,8 +55,8 @@ func (e *ExactEvm) Pay(requirements types.PaymentRequirements) (*types.PaymentPa
 }
 
 // Scheme implements payer.Pay.
-func (e *ExactEvm) Scheme() payer.Scheme {
-	return payer.SchemeExact
+func (e *ExactEvm) Scheme() api.Scheme {
+	return api.SchemeExact
 }
 
 func (e *ExactEvm) createPaymentExactEvm(requirements types.PaymentRequirements) (*types.PaymentPayload, error) {

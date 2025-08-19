@@ -1,4 +1,4 @@
-package payer
+package api
 
 import "time"
 
