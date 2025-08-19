@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.1.1-pre1](https://github.com/selesy/x402-buyer/compare/v0.1.0-pre1...v0.1.1-pre1) (2025-08-18)
+## [0.1.1](https://github.com/selesy/x402-buyer/compare/v0.1.0-pre1...v0.1.1) (2025-08-18)
 
 
 ### Bug Fixes
