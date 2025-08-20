@@ -4,12 +4,26 @@ import (
 	"crypto/ecdsa"
 	"net/http"
 
+	"github.com/ethereum/go-ethereum/accounts"
+	"github.com/ethereum/go-ethereum/accounts/keystore"
+
 	"github.com/selesy/x402-buyer/internal/signer"
 	"github.com/selesy/x402-buyer/pkg/api"
 )
 
+// ClientForKeyStore returns an http.Client capable of making payments
+// using cryptocurrency from an Ethereum account in an Ethereum keystore.
+func ClientForKeyStore(ks *keystore.KeyStore, acct accounts.Account, pass []byte, opts ...Option) (*http.Client, error) {
+	signer, err := signer.NewKeyStoreSigner(ks, acct, pass)
+	if err != nil {
+		return nil, err
+	}
+
+	return ClientForSigner(signer, opts...)
+}
+
 // ClientForPrivateKey returns an http.Client capable of making payments
-// using cryptocurrency from Ethereum account associated with the provided
+// using cryptocurrency from the Ethereum account associated with the provided
 // ECDSA private key (which is expected to be using the Ethereum secp256k1
 // curve.)
 func ClientForPrivateKey(priv *ecdsa.PrivateKey, opts ...Option) (*http.Client, error) {
