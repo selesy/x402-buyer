@@ -1,0 +1,2 @@
+export X402_ACCOUNT_ADDRESS="<account address with 0x prefix>"
+export X402_ACCOUNT_PASSWORD="<account password>"
