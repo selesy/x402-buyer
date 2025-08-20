@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/selesy/x402-buyer/compare/v0.2.0...v0.3.0) (2025-08-20)
+
+
+### Features
+
+* **keystore:** add example using Ethereum keystore as api.Signer ([2f8f91c](https://github.com/selesy/x402-buyer/commit/2f8f91c2176bfded6e015d3229e9f4f7375bb22e))
+
 ## [0.2.0](https://github.com/selesy/x402-buyer/compare/v0.1.1...v0.2.0) (2025-08-20)
 
 
