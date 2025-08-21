@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0](https://github.com/selesy/x402-buyer/compare/v0.3.0...v0.4.0) (2025-08-21)
+
+
+### Features
+
+* **decred:** add http.Client constructors using the Decred secp256k1 curve ([0ad9d18](https://github.com/selesy/x402-buyer/commit/0ad9d18bc4edbdd82f97323c1d18a62fbaaa0abc))
+* **decred:** add http.Client constructors using the Decred secp256k1 curve ([25a5867](https://github.com/selesy/x402-buyer/commit/25a5867eb8b9c18086f04ec2ca16e9b7ac4325f9))
+
 ## [0.3.0](https://github.com/selesy/x402-buyer/compare/v0.2.0...v0.3.0) (2025-08-20)
 
 
