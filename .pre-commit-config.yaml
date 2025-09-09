@@ -45,3 +45,11 @@ repos:
     - id: trufflehog
       alias: trufflehog
       name: trufflehog
+- repo: local
+  hooks:
+    - id: readme
+      name: readme
+      language: script
+      files: "^README\\.adoc$"
+      entry: ./scripts/readme.sh
+      pass_filenames: false

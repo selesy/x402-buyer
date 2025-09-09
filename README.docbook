@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?asciidoc-toc?>
+<?asciidoc-numbered?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:lang="en">
+<info>
+<title>x402-buyer</title>
+<date>2025-09-09</date>
+</info>
+<simpara><inlinemediaobject>
+<imageobject>
+<imagedata fileref="https://pkg.go.dev/badge/github.com/selesy/x402-buyer.svg"/>
+</imageobject>
+<textobject><phrase>x402 buyer</phrase></textobject>
+</inlinemediaobject>
+<inlinemediaobject>
+<imageobject>
+<imagedata fileref="https://img.shields.io/github/actions/workflow/status/selesy/x402-buyer/pre-commit.yaml"/>
+</imageobject>
+<textobject><phrase>GitHub Actions Workflow Status</phrase></textobject>
+</inlinemediaobject>
+<inlinemediaobject>
+<imageobject>
+<imagedata fileref="https://goreportcard.com/badge/github.com/selesy/x402-buyer"/>
+</imageobject>
+<textobject><phrase>x402 buyer</phrase></textobject>
+</inlinemediaobject>
+<inlinemediaobject>
+<imageobject>
+<imagedata fileref="https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square"/>
+</imageobject>
+<textobject><phrase>readme%20style standard brightgreen</phrase></textobject>
+</inlinemediaobject>
+<inlinemediaobject>
+<imageobject>
+<imagedata fileref="https://img.shields.io/github/license/selesy/x402-buyer"/>
+</imageobject>
+<textobject><phrase>GitHub License</phrase></textobject>
+</inlinemediaobject>
+<inlinemediaobject>
+<imageobject>
+<imagedata fileref="https://img.shields.io/github/v/release/selesy/x402-buyer"/>
+</imageobject>
+<textobject><phrase>GitHub Release</phrase></textobject>
+</inlinemediaobject>
+<inlinemediaobject>
+<imageobject>
+<imagedata fileref="https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg"/>
+</imageobject>
+<textobject><phrase>Conventional Commits</phrase></textobject>
+</inlinemediaobject>
+<inlinemediaobject>
+<imageobject>
+<imagedata fileref="https://img.shields.io/badge/pre&#8212;&#8203;commit-enabled-brightgreen?logo=pre-commit"/>
+</imageobject>
+<textobject><phrase>pre&#8212;&#8203;commit enabled brightgreen?logo=pre commit</phrase></textobject>
+</inlinemediaobject></simpara>
+<simpara>Package <literal>buyer</literal> produces <link xl:href="https://pkg.go.dev/net/http#Client">http.Client</link>'s that can make <link xl:href="https://x402.org">x402 payments</link> for HTTP content and services.</simpara>
+<section xml:id="_install">
+<title>Install</title>
+<simpara>Include this library in your project using the following command:</simpara>
+<programlisting language="bash" linenumbering="unnumbered">go get github.com/selesy/x402-buyer</programlisting>
+</section>
+<section xml:id="_usage">
+<title>Usage</title>
+<simpara>Create an <literal>http.Client</literal> as shown below, then use it to make HTTP requests as usual.  If an <literal>x402</literal> payment is required, it will be made by the client and the response will be returned as usual.</simpara>
+<programlisting language="go" linenumbering="unnumbered">package main
+
+import (
+	"io"
+	"log/slog"
+	"os"
+
+	"github.com/lmittmann/tint"
+
+	buyer "github.com/selesy/x402-buyer"
+)
+
+func main() {
+	const (
+		privateKeyEnvVar = "X402_BUYER_PRIVATE_KEY"
+		url              = "https://x402.smoyer.dev/premium-joke"
+	)
+
+	log := slog.New(tint.NewHandler(os.Stderr, &amp;tint.Options{
+		Level: slog.LevelDebug,
+	}))
+
+	client, err := buyer.ClientForPrivateKeyHexFromEnv(privateKeyEnvVar, buyer.WithLogger(log))
+	if err != nil {
+		slog.Error("failed to create client", tint.Err(err))
+		os.Exit(1)
+	}
+
+	resp, err := client.Get(url)
+	if err != nil {
+		log.Error("failed to make HTTP request", tint.Err(err))
+		os.Exit(1)
+	}
+
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Error("failed to close response body", tint.Err(err))
+		}
+	}()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	log.Info("HTTP response", slog.String("body", string(body)), slog.Int("code", resp.StatusCode))
+
+	for k, vs := range resp.Header {
+		for _, v := range vs {
+			log.Debug("HTTP response header", slog.String("key", k), slog.String("value", v))
+		}
+	}
+}</programlisting>
+<simpara>Full documentation for this library is available as <link xl:href="https://pkg.go.dev/github.com/selesy/x402-buyer">Go docs</link>.</simpara>
+</section>
+<section xml:id="_contributing">
+<title>Contributing</title>
+<itemizedlist>
+<listitem>
+<simpara>Please report issues using <link xl:href="https://github.com/selesy/x402-buyer/issues">GitHub Issues</link>.</simpara>
+</listitem>
+<listitem>
+<simpara>PRs are happily considered when submitted to <link xl:href="https://github.com/selesy/x402-buyer/pulls">GitHub Pull requests</link>.</simpara>
+</listitem>
+<listitem>
+<simpara>Other questions or discussions can be submitted to <link xl:href="https://github.com/selesy/x402-buyer/discussions">GitHub Discussions</link>.</simpara>
+</listitem>
+</itemizedlist>
+<section xml:id="_development">
+<title>Development</title>
+<simpara>This project strives to maintain minimal external dependencies.  If you have a feature that requires specific libraries, let&#8217;s discuss whether a new Go module should be created in a sub-directory.</simpara>
+<simpara>The tools required to develop this project and to run the <literal>pre-commit</literal> checks are defined in the <literal>.tool-versions</literal> file.</simpara>
+<screen linenumbering="unnumbered">asciidoctorj 3.0.0
+golang 1.24.4
+golangci-lint 2.4.0
+pre-commit 4.2.0
+pandoc 3.7.0.2
+python 3.10.4</screen>
+<simpara>If you&#8217;re using <literal>asdf</literal>, simply run <literal>asdf install</literal>.  Otherwise, install the listed tools in the manner required by your operating system.  Once the required tools are installed, install the <literal>pre-commit</literal> hooks by running <literal>pre-commit install --install-hooks</literal>.  Test your environment by running <literal>pre-commit run --all-files</literal>.</simpara>
+</section>
+</section>
+<section xml:id="_license">
+<title>License</title>
+<simpara>This project is distributed under the <link xl:href="https://github.com/selesy/x402-buyer/blob/main/LICENSE">MIT License</link>.</simpara>
+</section>
+</article>
