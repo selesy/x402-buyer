@@ -6,8 +6,10 @@ image:https://goreportcard.com/badge/github.com/selesy/x402-buyer[link=https://g
 image:https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square[link=https://github.com/RichardLitt/standard-readme]
 image:https://img.shields.io/github/license/selesy/x402-buyer[GitHub License]
 image:https://img.shields.io/github/v/release/selesy/x402-buyer[GitHub Release]
+image:https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg[Conventional Commits]
+image:https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit[link=https://github.com/pre-commit/pre-commit]
 
-Package `buyer` produces [http.Client](https://pkg.go.dev/net/http#Client)'s that can make [x402](https://x402.org) payments for HTTP content and services.
+Package `buyer` produces https://pkg.go.dev/net/http#Client[http.Client]'s that can make https://x402.org[x402 payments] for HTTP content and services.
 
 == Install
 
