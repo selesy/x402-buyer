@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-asciidoctorj -b docbook -o README.docbook README.adoc
-echo >> README.docbook
-pandoc -f docbook -t gfm -o README.md README.docbook --wrap=none
+asciidoctorj -b docbook -o ./docs/readme.docbook ./docs/readme.adoc
+echo >> ./docs/readme.docbook
+pandoc -f docbook -t gfm -o ./README.md ./docs/readme.docbook --wrap=none

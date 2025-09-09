@@ -1,0 +1,18 @@
+=== Contributing
+
+* Please report issues using https://github.com/selesy/x402-buyer/issues[GitHub Issues].
+* PRs are happily considered when submitted to https://github.com/selesy/x402-buyer/pulls[GitHub Pull requests].
+* Other questions or discussions can be submitted to https://github.com/selesy/x402-buyer/discussions[GitHub Discussions].
+
+==== Development
+
+This project strives to maintain minimal external dependencies.  If you have a feature that requires specific libraries, let's discuss whether a new Go module should be created in a sub-directory.
+
+The tools required to develop this project and to run the `pre-commit` checks are defined in the `.tool-versions` file.
+
+[source]
+----
+include::../.tool-versions[]
+----
+
+If you're using `asdf`, simply run `asdf install`.  Otherwise, install the listed tools in the manner required by your operating system.  Once the required tools are installed, install the `pre-commit` hooks by running `pre-commit install --install-hooks`.  Test your environment by running `pre-commit run --all-files`.

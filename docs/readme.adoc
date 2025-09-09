@@ -1,0 +1,15 @@
+== x402-buyer
+
+include::badges.adoc[]
+
+Package `buyer` produces https://pkg.go.dev/net/http#Client[http.Client]'s that can make https://x402.org[x402 payments] for HTTP content and services.
+
+include::install.adoc[]
+
+include::usage.adoc[]
+
+include::development.adoc[]
+
+=== License
+
+This project is distributed under the https://github.com/selesy/x402-buyer/blob/main/LICENSE[MIT License].

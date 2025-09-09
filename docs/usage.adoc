@@ -1,0 +1,10 @@
+=== Usage
+
+Create an `http.Client` as shown below, then use it to make HTTP requests as usual.  If an `x402` payment is required, it will be made by the client and the response will be returned as usual.
+
+[source,go]
+----
+include::../example/private-key/main.go[]
+----
+
+Full documentation for this library is available as https://pkg.go.dev/github.com/selesy/x402-buyer[Go docs].

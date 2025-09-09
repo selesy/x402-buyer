@@ -1,0 +1,8 @@
+=== Install
+
+Include this library in your project using the following command:
+
+[source,bash]
+----
+go get github.com/selesy/x402-buyer
+----
