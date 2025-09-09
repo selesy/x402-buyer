@@ -1,8 +1,10 @@
+# x402-buyer
+
 ![x402 buyer](https://pkg.go.dev/badge/github.com/selesy/x402-buyer.svg) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/selesy/x402-buyer/pre-commit.yaml) ![x402 buyer](https://goreportcard.com/badge/github.com/selesy/x402-buyer) ![readme%20style standard brightgreen](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square) ![GitHub License](https://img.shields.io/github/license/selesy/x402-buyer) ![GitHub Release](https://img.shields.io/github/v/release/selesy/x402-buyer) ![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg) ![pre—​commit enabled brightgreen?logo=pre commit](https://img.shields.io/badge/pre—​commit-enabled-brightgreen?logo=pre-commit)
 
 Package `buyer` produces [http.Client](https://pkg.go.dev/net/http#Client)'s that can make [x402 payments](https://x402.org) for HTTP content and services.
 
-# Install
+## Install
 
 Include this library in your project using the following command:
 
@@ -10,7 +12,7 @@ Include this library in your project using the following command:
 go get github.com/selesy/x402-buyer
 ```
 
-# Usage
+## Usage
 
 Create an `http.Client` as shown below, then use it to make HTTP requests as usual. If an `x402` payment is required, it will be made by the client and the response will be returned as usual.
 
@@ -72,7 +74,7 @@ func main() {
 
 Full documentation for this library is available as [Go docs](https://pkg.go.dev/github.com/selesy/x402-buyer).
 
-# Contributing
+## Contributing
 
 - Please report issues using [GitHub Issues](https://github.com/selesy/x402-buyer/issues).
 
@@ -80,7 +82,7 @@ Full documentation for this library is available as [Go docs](https://pkg.go.dev
 
 - Other questions or discussions can be submitted to [GitHub Discussions](https://github.com/selesy/x402-buyer/discussions).
 
-## Development
+### Development
 
 This project strives to maintain minimal external dependencies. If you have a feature that requires specific libraries, let’s discuss whether a new Go module should be created in a sub-directory.
 
@@ -95,6 +97,6 @@ The tools required to develop this project and to run the `pre-commit` checks ar
 
 If you’re using `asdf`, simply run `asdf install`. Otherwise, install the listed tools in the manner required by your operating system. Once the required tools are installed, install the `pre-commit` hooks by running `pre-commit install --install-hooks`. Test your environment by running `pre-commit run --all-files`.
 
-# License
+## License
 
 This project is distributed under the [MIT License](https://github.com/selesy/x402-buyer/blob/main/LICENSE).

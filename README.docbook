@@ -6,6 +6,8 @@
 <title>x402-buyer</title>
 <date>2025-09-09</date>
 </info>
+<section xml:id="_x402_buyer">
+<title>x402-buyer</title>
 <simpara><inlinemediaobject>
 <imageobject>
 <imagedata fileref="https://pkg.go.dev/badge/github.com/selesy/x402-buyer.svg"/>
@@ -147,5 +149,6 @@ python 3.10.4</screen>
 <section xml:id="_license">
 <title>License</title>
 <simpara>This project is distributed under the <link xl:href="https://github.com/selesy/x402-buyer/blob/main/LICENSE">MIT License</link>.</simpara>
+</section>
 </section>
 </article>
