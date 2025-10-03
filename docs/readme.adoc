@@ -1,3 +1,8 @@
+:org: selesy
+:repo: x402-buyer
+:org-repo: {org}/{repo}
+:gh: github.com/{org-repo}
+
 == x402-buyer
 
 include::badges.adoc[]
@@ -12,4 +17,4 @@ include::development.adoc[]
 
 === License
 
-This project is distributed under the https://github.com/selesy/x402-buyer/blob/main/LICENSE[MIT License].
+This project is distributed under the https://{gh}/blob/main/LICENSE[MIT License].
