@@ -30,6 +30,14 @@ repos:
     - id: go-test-mod
     - id: golangci-lint-mod
     - id: my-cmd-repo
+      name: go-build
+      alias: go-build
+      args: [go, build, -o, buyer-lichen, ./example/private-key/main.go]
+    - id: my-cmd-repo
+      name: lichen
+      alias: lichen
+      args: [go, tool, lichen, --json, buyer-sbom.json, buyer-lichen]
+    - id: my-cmd-repo
       alias: govulncheck
       name: govulncheck
       args: ["bash", "-c", "go tool golang.org/x/vuln/cmd/govulncheck ./..."]
